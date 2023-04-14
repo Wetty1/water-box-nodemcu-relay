@@ -1,0 +1,2 @@
+void setupOtaService();
+void otaLoopHandle();
