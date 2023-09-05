@@ -2,7 +2,6 @@
 #include <Arduino.h>
 #include <global_variable.hpp>
 #include <ESP8266WebServer.h>
-#include <ESP8266mDNS.h>
 #include <ESP8266WiFi.h>
 
 ESP8266WebServer server(80);
@@ -10,33 +9,36 @@ ESP8266WebServer server(80);
 extern bool isOn;
 extern long unsigned countTimeToTurnOff;
 extern long unsigned countTimeToNextTurnOn;
+extern char *readLitarage;
 
 void handleRoot()
 {
-    String html = "<!DOCTYPE html><html><head><meta charset=\"UTF-8\"><title>Informações do dispositivo</title></head><body>";
+    String html = "<!DOCTYPE html><html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"><title>Informações do dispositivo</title></head><body>";
     html += "<h1>Informações do dispositivo</h1>";
 
     // Informações a serem exibidas na página
 
-    int proximaLigacao = +(millis() - countTimeToNextTurnOn) / 60000 - 1433;
+    int proximaLigacao = (86000000 / 60000) - (millis() - countTimeToNextTurnOn) / 60000;
     int forcaSinal = WiFi.RSSI();
-    int tempoDesligar = +(millis() - countTimeToTurnOff) / 60000 - 120;
+    int tempoDesligar = (10800000 / 60000) - (millis() - countTimeToTurnOff) / 60000;
 
     html += "<p>Estado: ";
     if (isOn)
     {
         html += "<span style=\"color:green\">Ligado</span>";
         html += "</p>";
-        html += "<p>Força do sinal Wi-Fi: " + String(forcaSinal) + " dBm</p>";
-        html += "<p>Tempo para desligar: " + String(tempoDesligar) + " segundos</p>";
+        html += "<p>Tempo para desligar: " + String(tempoDesligar) + " minutos</p>";
     }
     else
     {
         html += "<span style=\"color:red\">Desligado</span>";
         html += "<p>Tempo para próxima ligação: " + String(proximaLigacao) + "  minutos </p>";
     }
-    html += "</body></html>";
+    html += "<p>Força do sinal Wi-Fi: " + String(forcaSinal) + " dBm</p>";
+    html += "<p>" + String(readLitarage) + " Litros</p>";
+    html += "<p>" + String(historyData) + "</p>";
 
+    html += "</body></html>";
     server.send(200, "text/html", html);
 }
 
@@ -59,12 +61,6 @@ void handleNotFound()
 
 void setupHttpServer()
 {
-    // CONFIG WEB SERVER
-    if (MDNS.begin("esp8266"))
-    {
-        Serial.println("MDNS responder started");
-    }
-
     server.on("/", handleRoot);
 
     server.onNotFound(handleNotFound);
@@ -75,5 +71,4 @@ void setupHttpServer()
 void loopHttpServer()
 {
     server.handleClient();
-    MDNS.update();
 }

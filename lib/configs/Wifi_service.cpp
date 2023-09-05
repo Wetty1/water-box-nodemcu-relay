@@ -1,6 +1,7 @@
 #include <Wifi_service.hpp>
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
+#include <ESP8266mDNS.h>
 #include <env.hpp>
 
 const char *ssid = stassid;
@@ -26,6 +27,11 @@ void setupWifi()
         digitalWrite(LED_BUILTIN, HIGH);
     }
 
+    if (MDNS.begin("espotarelay", apIP))
+    {
+        Serial.println("MDNS responder started");
+    }
+
     Serial.println("");
     Serial.print("Connected to ");
     Serial.println(ssid);
@@ -38,6 +44,7 @@ void setupWifi()
 
 void verifyWifi()
 {
+    MDNS.update();
     if (WiFi.status() != WL_CONNECTED)
     {
         digitalWrite(LED_BUILTIN, LOW);

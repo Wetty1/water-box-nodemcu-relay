@@ -7,9 +7,10 @@ int state = -1;
 extern bool isOn;
 extern long unsigned countTimeToTurnOff;
 extern long unsigned countTimeToNextTurnOn;
+extern char *historyData;
 
-#define timeToTurnOff 7200000     // 720000
-#define timeToNextTurnOn 86000000 // 86000000
+#define timeToTurnOff 10800000    // 10800000 3h
+#define timeToNextTurnOn 86000000 // 86000000 24h
 
 void controllRelay()
 {
@@ -19,17 +20,30 @@ void controllRelay()
         return;
 
     int responseState = getStateWaterBox();
-    bool signalToTurnOn = responseState != state && responseState == 1;
+    getCurrentLiters();
+    bool signalToTurnOn = responseState != state && responseState == 1 && isOn == false;
     bool signalToTurnOff = responseState != state && responseState == 0;
 
     if (signalToTurnOn)
     {
         countTimeToTurnOff = millis();
+        String newHistory = historyData;
+        newHistory += "Ligado em: ";
+        newHistory += getTimeNow();
+        newHistory += "\n";
+        newHistory.toCharArray(historyData, 24);
+        registerEvent();
     }
     if (signalToTurnOff)
     {
         countTimeToTurnOff = -1;
         countTimeToNextTurnOn = millis();
+        String newHistory = historyData;
+        newHistory += "Desligado em: ";
+        newHistory += getTimeNow();
+        newHistory += "\n";
+        newHistory.toCharArray(historyData, 24);
+        registerEvent();
     }
 
     Serial.println(responseState);
