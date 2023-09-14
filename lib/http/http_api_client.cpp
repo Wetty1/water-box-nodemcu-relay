@@ -81,7 +81,7 @@ char *getTimeNow()
 void registerEvent()
 {
     WiFiClientSecure clientHttps = WiFiClientSecure();
-    clientHttps.setFingerprint(fingerprint);
+    clientHttps.setInsecure();
     clientHttps.setTimeout(20000);
 
     Serial.print("[HTTP] begin...\n");

@@ -4,7 +4,7 @@
 
 void setupOtaService()
 {
-  ArduinoOTA.setHostname("espotarelay");
+  ArduinoOTA.setHostname("motor");
   Serial.println("Configure OTA");
   // CONFIG OTA
   ArduinoOTA.onStart([]()

@@ -12,7 +12,7 @@ void setup()
 
   setupWifi();
   // put your setup code here, to run once:
-  pinMode(D1, OUTPUT);
+  pinMode(LED_BUILTIN, OUTPUT);
   setupHttpServer();
   setupOtaService();
 }

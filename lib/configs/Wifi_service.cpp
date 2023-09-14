@@ -27,16 +27,16 @@ void setupWifi()
         digitalWrite(LED_BUILTIN, HIGH);
     }
 
-    if (MDNS.begin("espotarelay", apIP))
-    {
-        Serial.println("MDNS responder started");
-    }
-
     Serial.println("");
     Serial.print("Connected to ");
     Serial.println(ssid);
     Serial.print("IP address: ");
     Serial.println(WiFi.localIP());
+
+    if (MDNS.begin("motor", WiFi.localIP()))
+    {
+        Serial.println("MDNS responder started!");
+    }
 
     Serial.println("WIFI Ready");
     digitalWrite(LED_BUILTIN, LOW);
